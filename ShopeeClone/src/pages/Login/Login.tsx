@@ -1,6 +1,17 @@
+import { error } from 'console'
+import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 
 function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm()
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data)
+  })
   return (
     <div className='bg-orange'>
       <div className='mx-auto max-w-7xl px-4'>
@@ -21,12 +32,16 @@ function Login() {
                 <input
                   type='password'
                   name='password'
+                  autoComplete='on'
                   className='w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-500 focus:shadow-sm'
                   placeholder='Nhập mật khẩu'
                 />
               </div>
               <div className='mt-1 min-h-[1rem] text-sm text-red-600'>Bạn đã nhập sai mật khẩu</div>
-              <button className='w-full rounded-sm border-none bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'>
+              <button
+                type='submit'
+                className='w-full rounded-sm border-none bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+              >
                 Đăng Nhập
               </button>
               <div className='mt-8 text-center'>
