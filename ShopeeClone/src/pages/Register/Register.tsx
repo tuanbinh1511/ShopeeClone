@@ -97,7 +97,7 @@ function Register() {
                 <div className='flex items-center justify-center text-center'>
                   <span className='text-gray-400 '>Bạn đã có tải khoản ?</span>
                   <Link className='text-red-400' to='/login'>
-                    Đăng nhập
+                    Đăng kí
                   </Link>
                 </div>
               </div>

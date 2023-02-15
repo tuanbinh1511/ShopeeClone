@@ -1,23 +1,42 @@
-import { error } from 'console'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { omit } from 'lodash'
+
 import { useForm } from 'react-hook-form'
+import { useMutation } from 'react-query'
 import { Link } from 'react-router-dom'
+import { registerAccount } from 'src/apis/auth.api'
+import { schema, Schema } from 'src/utils/rules'
+import Input from 'src/components/Input'
+
+type FormData = Omit<Schema, 'confirm_password'>
+
+type loginSchema = Omit<schema, ['confirm_password']>
 
 function Login() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors }
-  } = useForm()
+  } = useForm<FormData>({ resolver: yupResolver(loginSchema) })
+
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: FormData) => registerAccount(body)
+  })
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
+    registerAccountMutation.mutate(data, {
+      onSuccess: (data) => {
+        console.log(data)
+      }
+    })
   })
   return (
     <div className='bg-orange'>
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10 '>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='rounded bg-white p-10 shadow-sm'>
+            <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit} noValidate>
               <div className='text-left text-2xl'>Đăng Nhập</div>
               <div className='mt-8'>
                 <input
@@ -48,7 +67,7 @@ function Login() {
                 <div className='flex items-center justify-center text-center'>
                   <span className='text-gray-400 '>Bạn đã có tải khoản chưa ?</span>
                   <Link className='text-red-400' to='/register'>
-                    Đăng kí
+                    Đăng nhập
                   </Link>
                 </div>
               </div>
