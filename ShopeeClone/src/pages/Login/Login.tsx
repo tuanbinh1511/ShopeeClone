@@ -1,33 +1,52 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
-
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { Link } from 'react-router-dom'
-import { registerAccount } from 'src/apis/auth.api'
+import { loginAccount } from 'src/apis/auth.api'
 import { schema, Schema } from 'src/utils/rules'
 import Input from 'src/components/Input'
+import { isAxios422Error } from 'src/utils/utils'
+import { ResponseAPI } from 'src/types/utils.type'
 
 type FormData = Omit<Schema, 'confirm_password'>
 
-type loginSchema = Omit<schema, ['confirm_password']>
+const LoginSchema = schema.omit(['confirm_password'])
 
 function Login() {
   const {
     register,
     handleSubmit,
+    setError,
     watch,
     formState: { errors }
-  } = useForm<FormData>({ resolver: yupResolver(loginSchema) })
+  } = useForm<FormData>({ resolver: yupResolver(LoginSchema) })
 
-  const registerAccountMutation = useMutation({
-    mutationFn: (body: FormData) => registerAccount(body)
+  const loginMutate = useMutation({
+    mutationFn: (body: FormData) => loginAccount(body)
   })
 
   const onSubmit = handleSubmit((data) => {
-    registerAccountMutation.mutate(data, {
+    loginMutate.mutate(data, {
       onSuccess: (data) => {
         console.log(data)
+      },
+      onError: (error) => {
+        if (isAxios422Error<ResponseAPI<Omit<FormData, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+          if (formError?.email) {
+            setError('email', {
+              message: formError.email,
+              type: 'Server'
+            })
+          }
+          if (formError?.password) {
+            setError('password', {
+              message: formError.password,
+              type: 'Server'
+            })
+          }
+        }
       }
     })
   })
@@ -38,28 +57,26 @@ function Login() {
           <div className='lg:col-span-2 lg:col-start-4'>
             <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit} noValidate>
               <div className='text-left text-2xl'>Đăng Nhập</div>
-              <div className='mt-8'>
-                <input
-                  type='email'
-                  name='email'
-                  className='w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-500 focus:shadow-sm'
-                  placeholder='Email hoặc số điện thoại'
-                />
-              </div>
-              <div className='mt-1 min-h-[1rem] text-sm text-red-600'>Email không hợp lệ</div>
-              <div className='mt-3'>
-                <input
-                  type='password'
-                  name='password'
-                  autoComplete='on'
-                  className='w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-500 focus:shadow-sm'
-                  placeholder='Nhập mật khẩu'
-                />
-              </div>
-              <div className='mt-1 min-h-[1rem] text-sm text-red-600'>Bạn đã nhập sai mật khẩu</div>
+              <Input
+                name='email'
+                register={register}
+                className='mt-8'
+                errorMessage={errors.email?.message}
+                placeholder='Email'
+                type='email'
+              />
+              <Input
+                name='password'
+                register={register}
+                className='mt-2'
+                errorMessage={errors.password?.message}
+                placeholder='Password'
+                type='password'
+                autoComplete='on'
+              />
               <button
                 type='submit'
-                className='w-full rounded-sm border-none bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
+                className='mt-4 w-full rounded-sm border-none bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
               >
                 Đăng Nhập
               </button>

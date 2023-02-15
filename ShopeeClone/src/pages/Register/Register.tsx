@@ -41,7 +41,7 @@ function Register() {
             })
           }
           if (formError?.password) {
-            setError('email', {
+            setError('password', {
               message: formError.password,
               type: 'Server'
             })
