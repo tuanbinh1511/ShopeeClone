@@ -7,6 +7,8 @@ import { omit } from 'lodash'
 import Input from 'src/components/Input'
 import { registerAccount } from 'src/apis/auth.api'
 import { watch } from 'fs'
+import { isAxios422Error } from 'src/utils/utils'
+import { ResponseAPI } from 'src/types/utils.type'
 
 type FormData = Schema
 
@@ -14,6 +16,7 @@ function Register() {
   const {
     register,
     handleSubmit,
+    setError,
     watch,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(schema) })
@@ -27,6 +30,23 @@ function Register() {
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => {
         console.log(data)
+      },
+      onError: (error) => {
+        if (isAxios422Error<ResponseAPI<Omit<FormData, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+          if (formError?.email) {
+            setError('email', {
+              message: formError.email,
+              type: 'Server'
+            })
+          }
+          if (formError?.password) {
+            setError('email', {
+              message: formError.password,
+              type: 'Server'
+            })
+          }
+        }
       }
     })
   })
