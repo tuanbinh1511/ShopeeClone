@@ -1,5 +1,5 @@
 function ProductList() {
-  return <div></div>
+  return <div>Product List </div>
 }
 
 export default ProductList
