@@ -83,7 +83,7 @@ function Login() {
               <div className='mt-8 text-center'>
                 <div className='flex items-center justify-center text-center'>
                   <span className='text-gray-400 '>Bạn đã có tải khoản chưa ?</span>
-                  <Link className='text-red-400' to='/register'>
+                  <Link className='text-red-400' to='/'>
                     Đăng nhập
                   </Link>
                 </div>
