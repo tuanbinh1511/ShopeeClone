@@ -1,4 +1,4 @@
-import { offset, shift, useFloating } from '@floating-ui/react'
+import { offset, Placement, shift, useFloating } from '@floating-ui/react'
 import { useInteractions } from '@floating-ui/react'
 import { useHover, arrow } from '@floating-ui/react'
 import { FloatingPortal } from '@floating-ui/react'
@@ -11,15 +11,24 @@ interface Props {
   className: string
   as?: ElementType
   initialOpen?: boolean
+  placement?: Placement
 }
 
-function Popover({ children, className, renderPopover, as: Element = 'div', initialOpen }: Props) {
+function Popover({
+  children,
+  className,
+  renderPopover,
+  as: Element = 'div',
+  initialOpen,
+  placement = 'bottom-end'
+}: Props) {
   const [isOpen, setIsOpen] = useState(initialOpen || false)
   const arrowRef = useRef(null)
   const id = useId()
   const { x, y, strategy, refs, context, middlewareData } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,
+    placement,
     middleware: [
       offset(6),
       shift(),
