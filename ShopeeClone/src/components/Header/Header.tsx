@@ -1,8 +1,22 @@
-import { divide } from 'lodash'
+import { useContext } from 'react'
+import { useMutation } from 'react-query'
 import { Link } from 'react-router-dom'
+import { logoutAccount } from 'src/apis/auth.api'
+import { AppContext } from 'src/contexts/app.context'
 import Popover from '../Popover'
 
 function Header() {
+  const { setIsAuthenticated, isAuthenticated } = useContext(AppContext)
+
+  const logoutMutation = useMutation({
+    mutationFn: logoutAccount,
+    onSuccess: () => {
+      setIsAuthenticated(false)
+    }
+  })
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 '>
       <div className='container'>
@@ -44,34 +58,54 @@ function Header() {
               <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
             </svg>
           </Popover>
-          <Popover
-            className='ml-6 flex cursor-pointer items-center pt-1 pb-2 text-white hover:text-gray-100'
-            renderPopover={
-              <div className='rounded-sm border-gray-100 bg-white shadow-md'>
-                <Link
-                  to='/profile'
-                  className='block border-none bg-white py-3 px-4   text-left  text-black hover:text-cyan-500'
-                >
-                  Tài khoản của tôi
-                </Link>
-                <Link to='' className='block border-none bg-white py-3 px-4  text-left text-black hover:text-cyan-500'>
-                  Đơn mua{' '}
-                </Link>
-                <Link to='' className='block border-none bg-white py-3 px-4   text-left text-black hover:text-cyan-500'>
-                  Đăng xuất
-                </Link>
+          {isAuthenticated && (
+            <Popover
+              className='ml-6 flex cursor-pointer items-center pt-1 pb-2 text-white hover:text-gray-100'
+              renderPopover={
+                <div className='rounded-sm border-gray-100 bg-white shadow-md'>
+                  <Link
+                    to='/profile'
+                    className='block border-none bg-white py-3 px-4   text-left  text-black hover:text-cyan-500'
+                  >
+                    Tài khoản của tôi
+                  </Link>
+                  <Link
+                    to=''
+                    className='block border-none bg-white py-3 px-4  text-left text-black hover:text-cyan-500'
+                  >
+                    Đơn mua{' '}
+                  </Link>
+                  <Link
+                    to=''
+                    onClick={handleLogout}
+                    className='block border-none bg-white py-3 px-4   text-left text-black hover:text-cyan-500'
+                  >
+                    Đăng xuất
+                  </Link>
+                </div>
+              }
+            >
+              <div className='mr-2 h-6 w-6 flex-shrink-0 '>
+                <img
+                  src='https://scontent.fdad3-5.fna.fbcdn.net/v/t1.6435-9/99013175_1552654368248618_9221118823996850176_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rvhw4bTpP_EAX_zd18h&_nc_ht=scontent.fdad3-5.fna&oh=00_AfD8HvOgAyizYU0OyjCyPOmak_DENi_Nu8ON8VvIVwUDfw&oe=64146796'
+                  alt='avatar'
+                  className='boder-none h-full w-full rounded-full object-cover'
+                />
               </div>
-            }
-          >
-            <div className='mr-2 h-6 w-6 flex-shrink-0 '>
-              <img
-                src='https://scontent.fdad3-5.fna.fbcdn.net/v/t1.6435-9/99013175_1552654368248618_9221118823996850176_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rvhw4bTpP_EAX_zd18h&_nc_ht=scontent.fdad3-5.fna&oh=00_AfD8HvOgAyizYU0OyjCyPOmak_DENi_Nu8ON8VvIVwUDfw&oe=64146796'
-                alt='avatar'
-                className='boder-none h-full w-full rounded-full object-cover'
-              />
+              <div>Tuấn Bình</div>
+            </Popover>
+          )}
+          {!isAuthenticated && (
+            <div className='flex items-center'>
+              <Link to='/register' className='mx-3 capitalize hover:text-white hover:opacity-80'>
+                Đăng ký
+              </Link>
+              <div className='boder-r-[1px] h-4 border-r-white'></div>
+              <Link to='/login' className='mx-3 capitalize hover:text-white hover:opacity-80'>
+                Đăng nhập
+              </Link>
             </div>
-            <div>Tuấn Bình</div>
-          </Popover>
+          )}
         </div>
         <div className='mt-4 grid grid-cols-12 items-end gap-4'>
           <Link to='/' className='col-span-2 '>

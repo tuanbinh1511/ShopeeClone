@@ -2,18 +2,22 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { loginAccount } from 'src/apis/auth.api'
 import { schema, Schema } from 'src/utils/rules'
 import Input from 'src/components/Input'
 import { isAxios422Error } from 'src/utils/utils'
-import { ResponseAPI } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
 type FormData = Omit<Schema, 'confirm_password'>
 
 const LoginSchema = schema.omit(['confirm_password'])
 
 function Login() {
+  const { setIsAuthenticated } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -28,11 +32,12 @@ function Login() {
 
   const onSubmit = handleSubmit((data) => {
     loginMutate.mutate(data, {
-      onSuccess: (data) => {
-        console.log(data)
+      onSuccess: () => {
+        setIsAuthenticated(true)
+        navigate('/')
       },
       onError: (error) => {
-        if (isAxios422Error<ResponseAPI<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxios422Error<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError?.email) {
             setError('email', {
@@ -83,8 +88,8 @@ function Login() {
               <div className='mt-8 text-center'>
                 <div className='flex items-center justify-center text-center'>
                   <span className='text-gray-400 '>Bạn đã có tải khoản chưa ?</span>
-                  <Link className='text-red-400' to='/'>
-                    Đăng nhập
+                  <Link className='text-red-400' to='/register'>
+                    Đăng kí
                   </Link>
                 </div>
               </div>
