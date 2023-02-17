@@ -49,7 +49,7 @@ function Header() {
             renderPopover={
               <div className='rounded-sm border-gray-100 bg-white shadow-md'>
                 <Link
-                  to=''
+                  to='/profile'
                   className='block border-none bg-white py-3 px-4   text-left  text-black hover:text-cyan-500'
                 >
                   Tài khoản của tôi
@@ -107,23 +107,60 @@ function Header() {
               </button>
             </div>
           </form>
-          <div className='col-span-1'>
-            <Link to='/'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='h-8 w-8 text-white'
-              >
-                <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
-                />
-              </svg>
-            </Link>
+          <div className='col-span-1 justify-self-start'>
+            <Popover
+              className='ml-6 flex cursor-pointer items-center pt-1 pb-2 text-white hover:text-gray-100'
+              renderPopover={
+                <div className='max-w-[400px] rounded-sm border-gray-100 bg-white text-sm shadow-md'>
+                  <div className='p-2'>
+                    <div className='capitalize text-gray-400 opacity-70'>Sản phẩm mới thêm </div>
+                    <div className='mt-5 hover:bg-gray-100 '>
+                      <div className='mt-4 flex'>
+                        <img
+                          src='https://cf.shopee.vn/file/sg-11134201-22110-w722mztcmgjv43_tn'
+                          alt=''
+                          className='h-11 w-11 flex-shrink-0 object-cover'
+                        />
+                        <div className='mx-3 flex-grow overflow-hidden'>
+                          <div className='truncate  text-base font-semibold'>
+                            {' '}
+                            Vận chuyển nhanh chóng / keycaps sữa mật ong / hồ sơ xda / vật liệu pbt /
+                            61/68/71/84/96/98/87/108/108 keycap
+                          </div>
+                        </div>
+                        <div className='ml-2 flex-shrink'>
+                          <span className='text-sm text-orange '>325.000đ</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className='my-5 flex justify-between '>
+                      <div className='mt-2 items-center text-sm capitalize text-gray-600'>12 thêm hàng vào giỏ </div>
+                      <div className='bg-orange hover:bg-opacity-80'>
+                        <button className='rounded-sm px-4 py-2 text-base text-white '> Xem giỏ hàng</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            >
+              <Link to='/'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-8 w-8 text-white'
+                >
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
+                  />
+                </svg>
+              </Link>
+            </Popover>
           </div>
         </div>
       </div>
