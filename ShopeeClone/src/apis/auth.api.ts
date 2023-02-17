@@ -5,3 +5,5 @@ export const registerAccount = (body: { email: string; password: string }) => ht
 
 // eslint-disable-next-line prettier/prettier
 export const loginAccount = (body: { email: string; password: string }) => http.post<AuthResponse>('/login', body)
+
+export const logoutAccount = () => http.post('/logout')

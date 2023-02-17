@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { schema, Schema } from 'src/utils/rules'
 import { useMutation } from 'react-query'
@@ -8,11 +8,15 @@ import Input from 'src/components/Input'
 import { registerAccount } from 'src/apis/auth.api'
 import { watch } from 'fs'
 import { isAxios422Error } from 'src/utils/utils'
-import { ResponseAPI } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
 
 type FormData = Schema
 
 function Register() {
+  const { setIsAuthenticated } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -28,11 +32,12 @@ function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: (data) => {
-        console.log(data)
+      onSuccess: () => {
+        setIsAuthenticated(true)
+        navigate('/')
       },
       onError: (error) => {
-        if (isAxios422Error<ResponseAPI<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxios422Error<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError?.email) {
             setError('email', {
@@ -91,13 +96,13 @@ function Register() {
                 type='submit'
                 className='mt-4 w-full rounded-sm border-none bg-red-500 py-4 px-2 text-center text-sm uppercase text-white hover:bg-red-600'
               >
-                Đăng Nhập
+                Đăng Kí
               </button>
               <div className='mt-8 text-center'>
                 <div className='flex items-center justify-center text-center'>
                   <span className='text-gray-400 '>Bạn đã có tải khoản ?</span>
                   <Link className='text-red-400' to='/login'>
-                    Đăng kí
+                    Đăng nhập
                   </Link>
                 </div>
               </div>
