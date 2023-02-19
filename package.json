@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@floating-ui/react": "^0.19.2",
+    "framer-motion": "^9.0.3"
+  }
+}

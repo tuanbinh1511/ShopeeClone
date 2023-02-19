@@ -3,7 +3,7 @@ import { omit } from 'lodash'
 import { useForm } from 'react-hook-form'
 import { useMutation } from 'react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { loginAccount } from 'src/apis/auth.api'
+import AuthApi from 'src/apis/auth.api'
 import { schema, Schema } from 'src/utils/rules'
 import Input from 'src/components/Input'
 import { isAxios422Error } from 'src/utils/utils'
@@ -27,7 +27,7 @@ function Login() {
   } = useForm<FormData>({ resolver: yupResolver(LoginSchema) })
 
   const loginMutate = useMutation({
-    mutationFn: (body: FormData) => loginAccount(body)
+    mutationFn: (body: FormData) => AuthApi.loginAccount(body)
   })
 
   const onSubmit = handleSubmit((data) => {

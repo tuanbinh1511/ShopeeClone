@@ -1,8 +1,20 @@
+import useQueryParams from 'src/hooks/useQueryParams'
 import AsideFilter from './AsideFilter'
 import Product from './Product/Product.'
 import SoftProductList from './SoftProductList'
+import { useQuery } from 'react-query'
+import productApi from 'src/apis/product.api'
+import { calcLength } from 'framer-motion'
 
 function ProductList() {
+  const queryParams = useQueryParams()
+  const { data } = useQuery({
+    queryKey: ['products', queryParams],
+    queryFn: () => {
+      return productApi.getProduct(queryParams)
+    }
+  })
+  console.log(data)
   return (
     <div className='bg-gray-200 py-6'>
       <div className='container'>
