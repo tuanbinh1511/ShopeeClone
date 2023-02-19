@@ -1,5 +1,6 @@
 import { useContext } from 'react'
 import { Navigate, Outlet, useRoutes } from 'react-router-dom'
+import path from './constant/path'
 import { AppContext } from './contexts/app.context'
 import MainLayout from './layouts/MainLayout'
 import RegisterLayout from './layouts/RegisterLayout'
@@ -25,7 +26,7 @@ export default function useRouteElement() {
       element: <RejectRoute />,
       children: [
         {
-          path: '/login',
+          path: path.login,
           element: (
             <RegisterLayout>
               <Login />
@@ -33,7 +34,7 @@ export default function useRouteElement() {
           )
         },
         {
-          path: '/register',
+          path: path.register,
           element: (
             <RegisterLayout>
               <Register />
@@ -47,7 +48,7 @@ export default function useRouteElement() {
       element: <ProtectRoute />,
       children: [
         {
-          path: '/profile',
+          path: path.profile,
           element: (
             <MainLayout>
               <Profile />
@@ -57,7 +58,7 @@ export default function useRouteElement() {
       ]
     },
     {
-      path: '/',
+      path: path.home,
       index: true,
       element: (
         <MainLayout>
