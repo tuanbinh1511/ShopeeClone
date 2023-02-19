@@ -32,7 +32,7 @@ function Login() {
 
   const onSubmit = handleSubmit((data) => {
     loginMutate.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         setIsAuthenticated(true)
         setProfile(data.data.data.user)
         navigate('/')
