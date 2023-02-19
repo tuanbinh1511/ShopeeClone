@@ -3,10 +3,10 @@ const plugin = require('tailwindcss/plugin')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   corePlugins: {
     container: false
   },
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -18,12 +18,14 @@ module.exports = {
     plugin(function ({ addComponents, theme }) {
       addComponents({
         '.container': {
-          margin: '0 auto',
           maxWidth: theme('columns.7xl'),
+          marginLeft: 'auto',
+          marginRight: 'auto',
           paddingLeft: theme('spacing.4'),
           paddingRight: theme('spacing.4')
         }
       })
-    })
+    }),
+    require('@tailwindcss/line-clamp')
   ]
 }
