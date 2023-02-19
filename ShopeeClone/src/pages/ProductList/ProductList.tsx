@@ -4,7 +4,6 @@ import Product from './Product/Product.'
 import SoftProductList from './SoftProductList'
 import { useQuery } from 'react-query'
 import productApi from 'src/apis/product.api'
-import { calcLength } from 'framer-motion'
 
 function ProductList() {
   const queryParams = useQueryParams()
@@ -25,11 +24,10 @@ function ProductList() {
           <div className='col-span-9'>
             <SoftProductList />
             <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5'>
-              {Array(30)
-                .fill(0)
-                .map((_, index) => (
-                  <div className='col-span-1' key={index}>
-                    <Product />
+              {data &&
+                data?.data.data.products.map((product) => (
+                  <div className='col-span-1' key={product._id}>
+                    <Product product={product} />
                   </div>
                 ))}
             </div>
