@@ -5,7 +5,7 @@ import { schema, Schema } from 'src/utils/rules'
 import { useMutation } from 'react-query'
 import { omit } from 'lodash'
 import Input from 'src/components/Input'
-import { registerAccount } from 'src/apis/auth.api'
+import AuthApi from 'src/apis/auth.api'
 import { watch } from 'fs'
 import { isAxios422Error } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
@@ -27,7 +27,7 @@ function Register() {
   } = useForm<FormData>({ resolver: yupResolver(schema) })
 
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<FormData, 'confirm_password'>) => registerAccount(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => AuthApi.registerAccount(body)
   })
 
   const onSubmit = handleSubmit((data) => {
