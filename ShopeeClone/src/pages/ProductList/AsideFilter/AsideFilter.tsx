@@ -1,9 +1,19 @@
-import { Link } from 'react-router-dom'
+import classNames from 'classnames'
+import { createSearchParams, Link } from 'react-router-dom'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import path from 'src/constant/path'
+import { Category } from 'src/types/category.type'
+import { QueryConfig } from '../ProductList'
 
-function AsideFilter() {
+interface Props {
+  queryConfig: QueryConfig
+  categories: Category[]
+}
+
+function AsideFilter({ queryConfig, categories }: Props) {
+  const { category } = queryConfig
+
   return (
     <div className='py-4'>
       <Link to={path.home} className='flex items-center font-bold '>
@@ -24,19 +34,32 @@ function AsideFilter() {
       </Link>
       <div className='my-4 h-[1px] bg-gray-300'></div>
       <ul>
-        <li className='py-2 pl-2 '>
-          <Link to={path.home} className='relative px-2 font-semibold text-orange'>
-            <svg viewBox='0 0 4 7' className=' absolute top-1 left-[-10px]  h-3 w-3 fill-orange'>
-              <polygon points='4 3.5 0 0 0 7'></polygon>
-            </svg>
-            Thời trang nam
-          </Link>
-        </li>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2 '>
-            Điện thoại
-          </Link>
-        </li>
+        {categories.map((categoryItem) => {
+          const isActive = category === categoryItem._id
+          return (
+            <li className=' py-2 pl-2 ' key={categoryItem._id}>
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    category: categoryItem._id
+                  }).toString()
+                }}
+                className={classNames('relative block px-2 ', {
+                  'font-semibold text-orange': isActive
+                })}
+              >
+                {isActive && (
+                  <svg viewBox='0 0 4 7' className={classNames(' absolute top-1 left-[-10px]  h-3 w-3 fill-orange ')}>
+                    <polygon points='4 3.5 0 0 0 7'></polygon>
+                  </svg>
+                )}
+                {categoryItem.name}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
       <Link to={path.home} className='mt-4 flex items-center font-bold uppercase'>
         <svg
