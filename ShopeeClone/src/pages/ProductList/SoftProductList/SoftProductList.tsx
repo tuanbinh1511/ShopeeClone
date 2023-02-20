@@ -1,60 +1,192 @@
-function SoftProductList() {
+import { sortBy, order as orderConstant } from 'src/constant/product'
+import { QueryConfig } from '../ProductList'
+import classNames from 'classnames'
+import { useNavigate, createSearchParams, Link } from 'react-router-dom'
+import { ProductListConfig } from 'src/types/product.type'
+import path from 'src/constant/path'
+import { omit } from 'lodash'
+
+interface Props {
+  queryConfig: QueryConfig
+  pageSize: number
+}
+function SoftProductList({ queryConfig, pageSize }: Props) {
+  const page = Number(queryConfig.page)
+  const { sort_by = sortBy.createdAt, order } = queryConfig
+  const isActiveSortBy = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
+    if (sort_by === sortByValue) {
+      return true
+    }
+  }
+  const navigate = useNavigate()
+  const handleSort = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(
+        omit(
+          {
+            ...queryConfig,
+            sort_by: sortByValue
+          },
+          ['order']
+        )
+      ).toString()
+    })
+  }
+  const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams({
+        ...queryConfig,
+        sort_by: sortBy.price,
+        order: orderValue
+      }).toString()
+    })
+  }
   return (
     <div className='bg-gray-300/40 py-4 px-3'>
       <div className='flex flex-wrap items-center justify-between gap-3'>
         <div className='flex flex-wrap items-center gap-2'>
           <div>Sắp xếp theo</div>
-          <button className='h-10 bg-orange  px-4 text-center font-semibold capitalize text-white hover:opacity-80 '>
+          <button
+            className={classNames(
+              'h-10   px-4 text-center font-semibold capitalize hover:opacity-80 ',
+              {
+                'bg-orange text-white ': isActiveSortBy(sortBy.view)
+              },
+              {
+                'bg white text-black': !isActiveSortBy(sortBy.view)
+              }
+            )}
+            onClick={() => handleSort(sortBy.view)}
+          >
             Phổ biến
           </button>
-          <button className='h-10 bg-white bg-slate-100 px-4 text-center  font-medium capitalize hover:opacity-80 '>
+          <button
+            className={classNames(
+              'h-10   px-4 text-center font-semibold capitalize hover:opacity-80 ',
+              {
+                'bg-orange text-white ': isActiveSortBy(sortBy.createdAt)
+              },
+              {
+                'bg white text-black': !isActiveSortBy(sortBy.createdAt)
+              }
+            )}
+            onClick={() => handleSort(sortBy.createdAt)}
+          >
             Mới nhất
           </button>
-          <button className='h-10 bg-white bg-slate-100 px-4 text-center  font-medium capitalize hover:opacity-80 '>
+          <button
+            className={classNames(
+              'h-10   px-4 text-center font-semibold capitalize hover:opacity-80 ',
+              {
+                'bg-orange text-white ': isActiveSortBy(sortBy.sold)
+              },
+              {
+                'bg white text-black': !isActiveSortBy(sortBy.sold)
+              }
+            )}
+            onClick={() => handleSort(sortBy.sold)}
+          >
             Bán chạy
           </button>
           <select
-            name=''
-            id=''
-            className='h-10 bg-white bg-slate-100 px-4 text-left  font-medium capitalize hover:opacity-80 focus:border-none'
+            className={classNames('h-8  px-4 text-left text-sm capitalize  outline-none ', {
+              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.price),
+              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
+            })}
+            value={order || ''}
+            onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
           >
-            Giá
-            <option value='price:asc'>Giá thấp đến cao</option>
-            <option value='price:desc'>Giá cao đến thấp</option>
+            <option value='' disabled className='bg-white text-black'>
+              Giá
+            </option>
+            <option value={orderConstant.asc} className='bg-white text-black'>
+              Giá: Thấp đến cao
+            </option>
+            <option value={orderConstant.desc} className='bg-white text-black'>
+              Giá: Cao đến thấp
+            </option>
           </select>
         </div>
         <div className='flex items-center'>
           <div>
-            <span className='text-orange'>1</span>
-            <span className=''>/3</span>
+            <span className='text-orange'>{page}</span>
+            <span>/{pageSize}</span>
           </div>
-          <div className='ml-4'>
-            <button className='flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-sm bg-gray-100 shadow outline-none hover:bg-slate-200'>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='h-3 w-3 text-center'
+          <div className='ml-2 flex'>
+            {page === 1 ? (
+              <span className='flex h-8 w-9 cursor-not-allowed items-center justify-center rounded-tl-sm rounded-bl-sm bg-white/60  shadow hover:bg-slate-100'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-3 w-3'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
+                </svg>
+              </span>
+            ) : (
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: (page - 1).toString()
+                  }).toString()
+                }}
+                className='flex h-8 w-9  items-center justify-center rounded-tl-sm rounded-bl-sm bg-white  shadow hover:bg-slate-100'
               >
-                <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
-              </svg>
-            </button>
-          </div>
-          <div className='mr-4'>
-            <button className='flex h-10 w-10 items-center justify-center rounded-sm bg-gray-100 shadow outline-none hover:bg-slate-200 '>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                fill='none'
-                viewBox='0 0 24 24'
-                strokeWidth={1.5}
-                stroke='currentColor'
-                className='h-3 w-3 '
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-3 w-3'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
+                </svg>
+              </Link>
+            )}
+            {page === pageSize ? (
+              <span className='flex h-8 w-9 cursor-not-allowed items-center justify-center rounded-tl-sm rounded-bl-sm bg-white/60  shadow hover:bg-slate-100'>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-3 w-3'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+                </svg>
+              </span>
+            ) : (
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: (page + 1).toString()
+                  }).toString()
+                }}
+                className='flex h-8 w-9  items-center justify-center rounded-tl-sm rounded-bl-sm bg-white  shadow hover:bg-slate-100'
               >
-                <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
-              </svg>
-            </button>
+                <svg
+                  xmlns='http://www.w3.org/2000/svg'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                  strokeWidth={1.5}
+                  stroke='currentColor'
+                  className='h-3 w-3'
+                >
+                  <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
+                </svg>
+              </Link>
+            )}
           </div>
         </div>
       </div>
