@@ -25,12 +25,12 @@ function Product({ product }: Props) {
             <span className='mr-1 text-base text-gray-600 line-through'>
               {fomatCurrency(product.price_before_discount)}
             </span>
-            -<span className='ml-1 text-sm'>₫</span>
+            -<span className='ml-1 text-sm '>₫</span>
             <span className=' text-base  text-orange  '>{fomatCurrency(product.price)}</span>
           </div>
           <div className='mt-3 mb-8 flex items-center justify-end'>
             <ProductRating rating={product.rating} />
-            <div className='ml-2 text-sm'>
+            <div className='ml-2 text-sm '>
               <span>{formatNumberToSocial(product.sold)}</span>
               <span className='ml-1'>Đã bán</span>
             </div>
