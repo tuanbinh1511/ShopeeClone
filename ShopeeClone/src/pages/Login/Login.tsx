@@ -12,9 +12,8 @@ import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 
-type FormData = Omit<Schema, 'confirm_password'>
-
-const LoginSchema = schema.omit(['confirm_password'])
+type FormData = Pick<Schema, 'email' | 'password'>
+const LoginSchema = schema.pick(['email', 'password'])
 
 function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
