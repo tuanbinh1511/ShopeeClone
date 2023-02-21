@@ -6,7 +6,6 @@ import SoftProductList from './SoftProductList'
 import { useQuery } from 'react-query'
 import productApi from 'src/apis/product.api'
 import Paginate from 'src/components/Paginate'
-
 import { ProductListConfig } from 'src/types/product.type'
 import categoryAPI from 'src/apis/category.api'
 
@@ -51,7 +50,7 @@ function ProductList() {
         {productData && (
           <div className='grid grid-cols-12 gap-6'>
             <div className='col-span-3'>
-              {categoryData && <AsideFilter queryConfig={queryConfig} categories={categoryData?.data.data} />}
+              {<AsideFilter queryConfig={queryConfig} categories={categoryData?.data.data || []} />}
             </div>
             <div className='col-span-9'>
               <SoftProductList queryConfig={queryConfig} pageSize={productData.data.data.pagination.page_size} />

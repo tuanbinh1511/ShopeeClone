@@ -20,3 +20,6 @@ export function formatNumberToSocial(value: number) {
     .format(value)
     .replace('.', ',')
 }
+export type NoUndefinedField<T> = {
+  [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>>
+}
