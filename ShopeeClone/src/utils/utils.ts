@@ -20,6 +20,8 @@ export function formatNumberToSocial(value: number) {
     .format(value)
     .replace('.', ',')
 }
+export const rateSale = (original: number, sale: number) => Math.round(((original - sale) / original) * 100) + '%'
+
 export type NoUndefinedField<T> = {
   [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>>
 }
