@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useQuery } from 'react-query'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
@@ -21,6 +21,7 @@ function ProductDetail() {
     () => (product ? product?.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   )
+  const imageRef = useRef<HTMLImageElement>(null)
   const [activeImage, setActiveImage] = useState('')
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -40,6 +41,22 @@ function ProductDetail() {
       setCurrentIndexImages((prev) => [prev[0] - 1, prev[1] - 1])
     }
   }
+  const handleZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const image = imageRef.current as HTMLImageElement
+    const { naturalHeight, naturalWidth } = image
+    const { offsetX, offsetY } = e.nativeEvent
+    const top = offsetY * (1 - naturalHeight / rect.height)
+    const left = offsetX * (1 - naturalWidth / rect.width)
+    image.style.width = naturalWidth + 'px'
+    image.style.height = naturalHeight + 'px'
+    image.style.maxWidth = 'unset'
+    image.style.top = top + 'px'
+    image.style.left = left + 'px'
+  }
+  const handleRemoveZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    imageRef.current?.removeAttribute('style')
+  }
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6 '>
@@ -47,11 +64,16 @@ function ProductDetail() {
         <div className='bg-white py-4 shadow'>
           <div className='grid grid-cols-12 gap-9 '>
             <div className='col-span-5'>
-              <div className='relative w-full pt-[100%] shadow'>
+              <div
+                className='relative w-full overflow-hidden pt-[100%] shadow'
+                onMouseMove={handleZoom}
+                onMouseLeave={handleRemoveZoom}
+              >
                 <img
                   src={activeImage}
                   alt={product.name}
-                  className='absolute top-0 left-0 h-[100%] w-[100%] object-cover'
+                  ref={imageRef}
+                  className='pointer-events-none absolute top-0 left-0 h-[100%] w-[100%] object-cover'
                 />
               </div>
               <div className='relative mt-4 grid grid-cols-5 gap-1'>
