@@ -7,10 +7,11 @@ import productApi from 'src/apis/product.api'
 import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
 import { Product } from 'src/types/product.type'
-import { fomatCurrency, formatNumberToSocial, rateSale } from 'src/utils/utils'
+import { fomatCurrency, formatNumberToSocial, getIdFromNameId, rateSale } from 'src/utils/utils'
 
 function ProductDetail() {
-  const { id } = useParams()
+  const { nameId } = useParams()
+  const id = getIdFromNameId(nameId as string)
   const { data: productDetailData } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
