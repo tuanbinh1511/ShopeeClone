@@ -1,35 +1,15 @@
-import useQueryParams from 'src/hooks/useQueryParams'
-import AsideFilter from './AsideFilter'
-import { omitBy, isUndefined } from 'lodash'
-import Product from './Product/Product.'
-import SoftProductList from './SoftProductList'
 import { useQuery } from 'react-query'
 import productApi from 'src/apis/product.api'
-import Paginate from 'src/components/Paginate'
 import { ProductListConfig } from 'src/types/product.type'
+import useQueryConfig from 'src/hooks/useQueryConfig'
 import categoryAPI from 'src/apis/category.api'
-
-export type QueryConfig = {
-  [key in keyof ProductListConfig]: string
-}
+import AsideFilter from './AsideFilter'
+import Product from './Product/Product.'
+import SoftProductList from './SoftProductList'
+import Paginate from 'src/components/Paginate'
 
 function ProductList() {
-  const queryParams: QueryConfig = useQueryParams()
-  const queryConfig: QueryConfig = omitBy(
-    {
-      page: queryParams.page || '1',
-      limit: queryParams.limit || '20',
-      sort_by: queryParams.sort_by,
-      exclude: queryParams.exclude,
-      name: queryParams.name,
-      order: queryParams.order,
-      price_max: queryParams.price_max,
-      price_min: queryParams.price_min,
-      rating_filter: queryParams.rating_filter,
-      category: queryParams.category
-    },
-    isUndefined
-  )
+  const queryConfig = useQueryConfig()
   const { data: productData } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {

@@ -55,6 +55,7 @@ function ProductDetail() {
     image.style.top = top + 'px'
     image.style.left = left + 'px'
   }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRemoveZoom = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     imageRef.current?.removeAttribute('style')
   }
