@@ -8,7 +8,7 @@ import ProductRating from 'src/components/ProductRating'
 import QuantityController from 'src/components/QuantityController'
 import { PurchaseStatus } from 'src/constant/purchase'
 import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
-import { fomatCurrency, formatNumberToSocial, getIdFromNameId, rateSale } from 'src/utils/utils'
+import { formatCurrency, formatNumberToSocial, getIdFromNameId, rateSale } from 'src/utils/utils'
 import Product from '../ProductList/Product'
 
 function ProductDetail() {
@@ -178,8 +178,8 @@ function ProductDetail() {
                 </div>
               </div>
               <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
-                <div className='text-gray-500 line-through'>₫{fomatCurrency(product.price_before_discount)}</div>
-                <div className='ml-3 text-3xl font-medium text-orange'>₫{fomatCurrency(product.price)}</div>
+                <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
+                <div className='ml-3 text-3xl font-medium text-orange'>₫{formatCurrency(product.price)}</div>
                 <div className='ml-4 rounded-sm bg-orange px-1 py-[2px] text-xs font-semibold uppercase text-white'>
                   {rateSale(product.price_before_discount, product.price)} giảm
                 </div>

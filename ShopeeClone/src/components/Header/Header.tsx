@@ -13,7 +13,7 @@ import { omit } from 'lodash'
 import purchaseApi from 'src/apis/purchase.api'
 import { PurchaseStatus } from 'src/constant/purchase'
 import NoProduct from 'src/assets/images/NoProduct.png'
-import { fomatCurrency } from 'src/utils/utils'
+import { formatCurrency } from 'src/utils/utils'
 import { queryClient } from 'src/main'
 
 type FormData = Pick<Schema, 'name'>
@@ -211,7 +211,7 @@ function Header() {
                               <div className='truncate  text-base font-semibold'>{purchase.product.name}</div>
                             </div>
                             <div className='ml-2 flex-shrink'>
-                              <span className='text-sm text-orange '>₫{fomatCurrency(purchase.product.price)}</span>
+                              <span className='text-sm text-orange '>₫{formatCurrency(purchase.product.price)}</span>
                             </div>
                           </div>
                         ))}
