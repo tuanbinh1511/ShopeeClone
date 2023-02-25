@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import ProductRating from 'src/components/ProductRating'
 import path from 'src/constant/path'
 import { Product as ProductType } from 'src/types/product.type'
-import { fomatCurrency, formatNumberToSocial, generateNameId } from 'src/utils/utils'
+import { formatCurrency, formatNumberToSocial, generateNameId } from 'src/utils/utils'
 
 interface Props {
   product: ProductType
@@ -24,10 +24,10 @@ function Product({ product }: Props) {
           <div className='flex flex-shrink-0 pt-4'>
             <span className='flex items-center text-sm'>₫</span>
             <span className='mr-1 text-base text-gray-600 line-through'>
-              {fomatCurrency(product.price_before_discount)}
+              {formatCurrency(product.price_before_discount)}
             </span>
             -<span className='ml-1 flex items-center text-sm text-orange'>₫</span>
-            <span className=' text-base  text-orange  '>{fomatCurrency(product.price)}</span>
+            <span className=' text-base  text-orange  '>{formatCurrency(product.price)}</span>
           </div>
           <div className='mt-3 mb-8 flex items-center justify-end'>
             <ProductRating rating={product.rating} />

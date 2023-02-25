@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
@@ -6,7 +7,7 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClientProvider } from 'react-query'
 import { QueryClient } from 'react-query'
-import { AppContext, AppProvider } from './contexts/app.context'
+import { AppProvider } from './contexts/app.context'
 
 export const queryClient = new QueryClient({
   defaultOptions: {

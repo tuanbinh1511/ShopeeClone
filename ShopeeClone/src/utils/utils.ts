@@ -8,7 +8,7 @@ export function isAxios422Error<FormError>(error: unknown): error is AxiosError<
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
 
-export function fomatCurrency(currency: number) {
+export function formatCurrency(currency: number) {
   return new Intl.NumberFormat('de-DE').format(currency)
 }
 
