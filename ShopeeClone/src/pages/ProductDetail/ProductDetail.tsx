@@ -4,12 +4,9 @@ import { useMutation, useQuery, useQueryClient } from 'react-query'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import purchaseApi from 'src/apis/purchase.api'
-
-import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
 import QuantityController from 'src/components/QuantityController'
 import { PurchaseStatus } from 'src/constant/purchase'
-
 import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
 import { fomatCurrency, formatNumberToSocial, getIdFromNameId, rateSale } from 'src/utils/utils'
 import Product from '../ProductList/Product'
@@ -127,7 +124,7 @@ function ProductDetail() {
                     <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
                   </svg>
                 </button>
-                {currentImage.map((img, index) => {
+                {currentImage.map((img) => {
                   const isActive = img === activeImage
                   return (
                     <div
