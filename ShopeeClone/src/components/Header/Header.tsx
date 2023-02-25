@@ -2,7 +2,6 @@ import { useContext } from 'react'
 import { useMutation, useQuery } from 'react-query'
 import { createSearchParams, Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { useQueryClient } from 'react-query'
 import AuthApi from 'src/apis/auth.api'
 import { AppContext } from 'src/contexts/app.context'
 import Popover from '../Popover'
@@ -10,11 +9,12 @@ import path from 'src/constant/path'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { schema, Schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { max, omit } from 'lodash'
+import { omit } from 'lodash'
 import purchaseApi from 'src/apis/purchase.api'
 import { PurchaseStatus } from 'src/constant/purchase'
 import NoProduct from 'src/assets/images/NoProduct.png'
 import { fomatCurrency } from 'src/utils/utils'
+import { queryClient } from 'src/main'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
@@ -35,6 +35,7 @@ function Header() {
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchases', { status: PurchaseStatus.inCart }] })
     }
   })
   const handleLogout = () => {
@@ -42,7 +43,8 @@ function Header() {
   }
   const { data: purchasesIncartData } = useQuery({
     queryKey: ['purchases', { status: PurchaseStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchase({ status: PurchaseStatus.inCart })
+    queryFn: () => purchaseApi.getPurchase({ status: PurchaseStatus.inCart }),
+    enabled: isAuthenticated
   })
   const purchasesIncart = purchasesIncartData?.data.data
 
@@ -137,7 +139,7 @@ function Header() {
                 <img
                   src='https://scontent.fdad3-5.fna.fbcdn.net/v/t1.6435-9/99013175_1552654368248618_9221118823996850176_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rvhw4bTpP_EAX_zd18h&_nc_ht=scontent.fdad3-5.fna&oh=00_AfD8HvOgAyizYU0OyjCyPOmak_DENi_Nu8ON8VvIVwUDfw&oe=64146796'
                   alt='avatar'
-                  className='boder-none h-full w-full rounded-full object-cover'
+                  className='h-full w-full rounded-full border-none object-cover'
                 />
               </div>
               <div>{profile?.email}</div>
@@ -218,17 +220,20 @@ function Header() {
                       <div className='my-5 flex justify-between '>
                         <div className='mt-2 items-center text-sm capitalize text-gray-600'>
                           {purchasesIncart.length > MAX_Purchases ? purchasesIncart.length - MAX_Purchases : ''}
-                          {}thêm hàng vào giỏ{' '}
+                          {''}thêm hàng vào giỏ{' '}
                         </div>
                         <div className='bg-orange hover:bg-opacity-80'>
-                          <button className='rounded-sm px-4 py-2 text-base text-white '> Xem giỏ hàng</button>
+                          <Link to={path.cart} className='rounded-sm px-4 py-2 text-base text-white '>
+                            {' '}
+                            Xem giỏ hàng
+                          </Link>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className='flex h-[300px] w-[300px] items-center justify-center p-2 '>
-                      <img src={NoProduct} alt='' />
-                      <div className='text-base capitalize leading-6'>Chưa có sản phẩm</div>
+                    <div className='flex h-[300px] w-[300px] flex-col items-center justify-center p-2'>
+                      <img src={NoProduct} alt='' className=' max-h-20 max-w-[80px] flex-grow' />
+                      <div className=' text-base capitalize leading-6'>Chưa có sản phẩm</div>
                     </div>
                   )}
                 </div>
@@ -249,9 +254,11 @@ function Header() {
                     d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
                   />
                 </svg>
-                <span className='absolute top-[-5px] left-[17px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange '>
-                  {purchasesIncart?.length}
-                </span>
+                {isAuthenticated && (
+                  <span className='absolute top-[-5px] left-[17px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange '>
+                    {purchasesIncart?.length}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>

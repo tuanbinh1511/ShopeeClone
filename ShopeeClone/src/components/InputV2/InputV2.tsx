@@ -1,4 +1,4 @@
-import { forwardRef, InputHTMLAttributes, useState } from 'react'
+import { InputHTMLAttributes, useState } from 'react'
 import { useController, UseControllerProps } from 'react-hook-form'
 // eslint-disable-next-line import/no-unresolved
 import { FieldPath, FieldValues } from 'react-hook-form/dist/types'

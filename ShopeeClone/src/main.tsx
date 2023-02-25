@@ -8,7 +8,7 @@ import { QueryClientProvider } from 'react-query'
 import { QueryClient } from 'react-query'
 import { AppContext, AppProvider } from './contexts/app.context'
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false
