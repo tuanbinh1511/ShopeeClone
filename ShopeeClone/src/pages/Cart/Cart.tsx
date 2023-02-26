@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useQuery } from 'react-query'
+import { useQuery, useMutation } from 'react-query'
 import { Link } from 'react-router-dom'
 import produce from 'immer'
+import { keyBy } from 'lodash'
 import purchaseApi from 'src/apis/purchase.api'
 import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
@@ -17,25 +18,34 @@ interface ExtendedPurchase extends Purchase {
 
 function Cart() {
   const [extendedPurchase, setExtendedPurchase] = useState<ExtendedPurchase[]>([])
-  const { data: purchasesIncartData } = useQuery({
+  const { data: purchasesIncartData, refetch } = useQuery({
     queryKey: ['purchases', { status: PurchaseStatus.inCart }],
     queryFn: () => purchaseApi.getPurchase({ status: PurchaseStatus.inCart })
+  })
+  const updatePurchaseMutation = useMutation({
+    mutationFn: purchaseApi.updatePurchase,
+    onSuccess: () => {
+      refetch()
+    }
   })
   const purchasesIncart = purchasesIncartData?.data.data
   const isAllChecked = extendedPurchase.every((purchase) => purchase.checked)
   useEffect(() => {
-    setExtendedPurchase(
-      purchasesIncart?.map((purchase) => ({
-        ...purchase,
-        disable: false,
-        checked: false
-      })) || []
-    )
+    setExtendedPurchase((prev) => {
+      const extendedPurchasesObject = keyBy(prev, '_id')
+      return (
+        purchasesIncart?.map((purchase) => ({
+          ...purchase,
+          disable: false,
+          checked: Boolean(extendedPurchasesObject[purchase._id]?.checked)
+        })) || []
+      )
+    })
   }, [purchasesIncart])
-  const handleChecked = (productIndex: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChecked = (purchaseIndex: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setExtendedPurchase(
       produce((draft) => {
-        draft[productIndex].checked = e.target.checked
+        draft[purchaseIndex].checked = e.target.checked
       })
     )
   }
@@ -47,6 +57,26 @@ function Cart() {
       }))
     )
   }
+  const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {
+    setExtendedPurchase(
+      produce((draft) => {
+        draft[purchaseIndex].buy_count = value
+      })
+    )
+  }
+
+  const handleQuantity = (purchaseIndex: number, value: number, enable: boolean) => {
+    if (enable) {
+      const purchase = extendedPurchase[purchaseIndex]
+      setExtendedPurchase(
+        produce((draft) => {
+          draft[purchaseIndex].disable = true
+        })
+      )
+      updatePurchaseMutation.mutate({ product_id: purchase.product._id, buy_count: value })
+    }
+  }
+
   return (
     <div className='bg-neutral-100 py-16'>
       <div className='container'>
@@ -132,6 +162,19 @@ function Cart() {
                           max={purchase.product.quantity}
                           value={purchase.buy_count}
                           className=''
+                          onIncrease={(value) => handleQuantity(index, value, value < purchase.product.quantity)}
+                          onDecrease={(value) => handleQuantity(index, value, value > 0)}
+                          onType={handleTypeQuantity(index)}
+                          onFocusOut={(value) =>
+                            handleQuantity(
+                              index,
+                              value,
+                              value < purchase.product.quantity &&
+                                value > 0 &&
+                                value !== (purchasesIncart as Purchase[])[index].buy_count
+                            )
+                          }
+                          disabled={purchase.disable}
                         ></QuantityController>
                       </div>
                       <div className='col-span-1'>
