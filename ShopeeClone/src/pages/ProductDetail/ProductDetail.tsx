@@ -1,11 +1,12 @@
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import purchaseApi from 'src/apis/purchase.api'
 import ProductRating from 'src/components/ProductRating'
 import QuantityController from 'src/components/QuantityController'
+import path from 'src/constant/path'
 import { PurchaseStatus } from 'src/constant/purchase'
 import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocial, getIdFromNameId, rateSale } from 'src/utils/utils'
@@ -19,7 +20,7 @@ function ProductDetail() {
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
   })
-
+  const navigate = useNavigate()
   const product = productDetailData?.data.data
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const currentImage = useMemo(
@@ -81,6 +82,15 @@ function ProductDetail() {
         }
       }
     )
+  }
+  const buyNow = async () => {
+    const res = await addToCartMutation.mutateAsync({ buy_count: buyCount, product_id: product?._id as string })
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id
+      }
+    })
   }
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
@@ -225,7 +235,10 @@ function ProductDetail() {
                   </svg>
                   Thêm vào giỏ hàng
                 </button>
-                <button className='ml-5 h-12 bg-orange py-4 px-4 capitalize text-white hover:opacity-80'>
+                <button
+                  onClick={buyNow}
+                  className='ml-5 h-12 bg-orange py-4 px-4 capitalize text-white hover:opacity-80'
+                >
                   Mua ngay
                 </button>
               </div>
