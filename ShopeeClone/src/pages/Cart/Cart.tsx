@@ -180,7 +180,7 @@ function Cart() {
                                 name: purchase.product.name,
                                 id: purchase.product._id
                               })}`}
-                              className='mr-4 items-center text-sm'
+                              className='mr-4 items-center text-left text-sm'
                             >
                               {purchase.product.name}
                             </Link>
