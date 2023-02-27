@@ -12,6 +12,9 @@ import ProductList from './pages/ProductList'
 
 import Profile from './pages/Profile'
 import Register from './pages/Register'
+import UserLayout from './pages/User/Layout/UserLayout'
+import ChangePassword from './pages/User/Pages/ChangePassword'
+import HistoryPurchase from './pages/User/Pages/HistoryPurchase'
 
 function ProtectRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -65,6 +68,28 @@ export default function useRouteElement() {
               <Cart />
             </CartLayout>
           )
+        },
+        {
+          path: path.user,
+          element: (
+            <MainLayout>
+              <UserLayout />
+            </MainLayout>
+          ),
+          children: [
+            {
+              path: path.profile,
+              element: <Profile />
+            },
+            {
+              path: path.changePassword,
+              element: <ChangePassword />
+            },
+            {
+              path: path.historyPurchase,
+              element: <HistoryPurchase />
+            }
+          ]
         }
       ]
     },
