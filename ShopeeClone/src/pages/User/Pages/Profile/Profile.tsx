@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import InputNumber from 'src/components/InputNumber'
 import { useEffect } from 'react'
+import DataSelect from '../../components/DataSelect'
 
 type FormData = Pick<userSchema, 'name' | 'address' | 'phone' | 'avatar' | 'date_of_birth'>
 
@@ -33,6 +34,7 @@ function Profile() {
     queryKey: ['profile'],
     queryFn: userApi.getProfile
   })
+  const updateProfileMutation = useMutation(userApi.updateProfile)
   const profile = profileData?.data.data
   useEffect(() => {
     if (profile) {
@@ -43,14 +45,16 @@ function Profile() {
       setValue('date_of_birth', profile.date_of_birth ? new Date(profile.date_of_birth) : new Date(1990, 0, 1))
     }
   }, [profile, setValue])
-
+  const onSubmit = handleSubmit((data) => {
+    updateProfileMutation.mutate({})
+  })
   return (
     <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
       <div className='border-b border-b-gray-200 py-6'>
         <h1 className='text-lg font-medium capitalize text-gray-900'>Hồ Sơ Của Tôi</h1>
         <div className='mt-1 text-sm text-gray-700'>Quản lý thông tin hồ sơ để bảo mật tài khoản</div>
       </div>
-      <form className='mt-8 flex flex-col-reverse md:flex-row md:items-start'>
+      <form className='mt-8 flex flex-col-reverse md:flex-row md:items-start' onSubmit={onSubmit}>
         <div className='mt-6 flex-grow md:mt-0 md:pr-12'>
           <div className='flex flex-col flex-wrap sm:flex-row'>
             <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Email</div>
@@ -80,7 +84,7 @@ function Profile() {
                   <InputNumber
                     classNameInput='w-full rounded-sm border border-gray-300 px-3 py-2 outline-none focus:border-gray-500 focus:shadow-sm'
                     placeholder='Tên'
-                    errorMessage={errors.name?.message}
+                    errorMessage={errors.phone?.message}
                     {...field}
                     onChange={field.onChange}
                   />
@@ -100,22 +104,13 @@ function Profile() {
               />
             </div>
           </div>
-          <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
-            <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'>Ngày sinh</div>
-            <div className='sm:w-[80%] sm:pl-5'>
-              <div className='flex justify-between'>
-                <select className='h-10 w-[32%] rounded-sm border border-black/10 px-3'>
-                  <option disabled>Ngày</option>
-                </select>
-                <select className='h-10 w-[32%] rounded-sm border border-black/10 px-3'>
-                  <option disabled>Tháng</option>
-                </select>
-                <select className='h-10 w-[32%] rounded-sm border border-black/10 px-3'>
-                  <option disabled>Năm</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <Controller
+            control={control}
+            name='date_of_birth'
+            render={({ field }) => (
+              <DataSelect value={field.value} onChange={field.onChange} errorMessage={errors.date_of_birth?.message} />
+            )}
+          ></Controller>
           <div className='mt-2 flex flex-col flex-wrap sm:flex-row'>
             <div className='truncate pt-3 capitalize sm:w-[20%] sm:text-right'></div>
             <div className='sm:w-[80%] sm:pl-5'>
