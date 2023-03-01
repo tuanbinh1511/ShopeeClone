@@ -6,11 +6,18 @@ import { userSchema } from 'src/utils/rules'
 import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import InputNumber from 'src/components/InputNumber'
-import { useEffect } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import DataSelect from '../../components/DataSelect'
+import { AppContext } from 'src/contexts/app.context'
+import { setProfileFromLS } from 'src/utils/auth'
+import { toast } from 'react-toastify'
+import { getAvatarUrl, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { ErrorResponse } from 'src/types/utils.type'
 
 type FormData = Pick<userSchema, 'name' | 'address' | 'phone' | 'avatar' | 'date_of_birth'>
-
+type FormDataError = Omit<FormData, 'date_of_birth'> & {
+  date_of_birth?: string
+}
 const profileSchema = userSchema.pick(['address', 'avatar', 'phone', 'name', 'date_of_birth'])
 function Profile() {
   const {
@@ -18,6 +25,7 @@ function Profile() {
     control,
     formState: { errors },
     setError,
+    watch,
     setValue,
     handleSubmit
   } = useForm<FormData>({
@@ -30,10 +38,18 @@ function Profile() {
     },
     resolver: yupResolver(profileSchema)
   })
-  const { data: profileData } = useQuery({
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { setProfile } = useContext(AppContext)
+  const [file, setFile] = useState<File>()
+
+  const previewImage = useMemo(() => {
+    return file ? URL.createObjectURL(file) : ''
+  }, [file])
+  const { data: profileData, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: userApi.getProfile
   })
+  const uploadAvatarMutaion = useMutation(userApi.uploadAvatar)
   const updateProfileMutation = useMutation(userApi.updateProfile)
   const profile = profileData?.data.data
   useEffect(() => {
@@ -45,9 +61,51 @@ function Profile() {
       setValue('date_of_birth', profile.date_of_birth ? new Date(profile.date_of_birth) : new Date(1990, 0, 1))
     }
   }, [profile, setValue])
-  const onSubmit = handleSubmit((data) => {
-    updateProfileMutation.mutate({})
+  const avatar = watch('avatar')
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      let avatarName = avatar
+      if (file) {
+        const form = new FormData()
+        form.append('image', file)
+        const uploadRes = await uploadAvatarMutaion.mutateAsync(form)
+        avatarName = uploadRes.data.data
+        setValue('avatar', avatarName)
+      }
+
+      const res = await updateProfileMutation.mutateAsync({
+        ...data,
+        date_of_birth: data.date_of_birth?.toISOString(),
+        avatar: avatarName,
+        __v: 0
+      })
+      setProfile(res.data.data)
+      setProfileFromLS(res.data.data)
+      refetch()
+      toast.success(res.data.message)
+    } catch (error) {
+      if (isAxiosUnprocessableEntityError<ErrorResponse<FormDataError>>(error)) {
+        const formError = error.response?.data.data
+        if (formError) {
+          Object.keys(formError).forEach((key) => {
+            setError(key as keyof FormDataError, {
+              message: formError[key as keyof FormDataError],
+              type: 'Server'
+            })
+          })
+        }
+      }
+    }
   })
+
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileFromLocal = event.target.files?.[0]
+    setFile(fileFromLocal)
+  }
+
+  const handleUpload = () => {
+    fileInputRef.current?.click()
+  }
   return (
     <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
       <div className='border-b border-b-gray-200 py-6'>
@@ -127,15 +185,16 @@ function Profile() {
           <div className='flex flex-col items-center'>
             <div className='my-5 h-24 w-24'>
               <img
-                src='https://cf.shopee.vn/file/d04ea22afab6e6d250a370d7ccc2e675_tn'
+                src={previewImage || getAvatarUrl(avatar)}
                 alt=''
-                className='w-full  rounded-full object-cover'
+                className='h-full w-full rounded-full object-cover'
               />
             </div>
-            <input className='hidden' type='file' accept='.jpg,.jpeg,.png' />
+            <input className='hidden' type='file' accept='.jpg,.jpeg,.png' ref={fileInputRef} onChange={onFileChange} />
             <button
               type='button'
               className='flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
+              onClick={handleUpload}
             >
               Chọn ảnh
             </button>

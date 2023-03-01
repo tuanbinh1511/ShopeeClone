@@ -7,6 +7,8 @@ import AuthApi from 'src/apis/auth.api'
 import { queryClient } from 'src/main'
 import { useContext } from 'react'
 import { PurchaseStatus } from 'src/constant/purchase'
+import noAvatar from 'src/assets/images/noAvartar.jpg'
+import { getAvatarUrl } from 'src/utils/utils'
 function NavHeader() {
   const { setIsAuthenticated, isAuthenticated, setProfile, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
@@ -84,11 +86,7 @@ function NavHeader() {
           }
         >
           <div className='mr-2 h-6 w-6 flex-shrink-0 '>
-            <img
-              src='https://scontent.fdad3-5.fna.fbcdn.net/v/t1.6435-9/99013175_1552654368248618_9221118823996850176_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=Rvhw4bTpP_EAX_zd18h&_nc_ht=scontent.fdad3-5.fna&oh=00_AfD8HvOgAyizYU0OyjCyPOmak_DENi_Nu8ON8VvIVwUDfw&oe=64146796'
-              alt='avatar'
-              className='h-full w-full rounded-full border-none object-cover'
-            />
+            <img src={getAvatarUrl(profile?.avatar)} alt='avatar' className='h-full w-full rounded-full object-cover' />
           </div>
           <div>{profile?.email}</div>
         </Popover>
