@@ -1,5 +1,7 @@
 import axios, { AxiosError, HttpStatusCode } from 'axios'
 import { string } from 'yup'
+import userImage from 'src/assets/images/noAvartar.jpg'
+import config from 'src/constant/config'
 export function isAxiosError(error: unknown): error is AxiosError {
   // eslint-disable-next-line import/no-named-as-default-member
   return axios.isAxiosError(error)
@@ -8,6 +10,9 @@ export function isAxios422Error<FormError>(error: unknown): error is AxiosError<
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
 
+export function isAxiosUnprocessableEntityError<FormError>(error: unknown): error is AxiosError<FormError> {
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
+}
 export function formatCurrency(currency: number) {
   return new Intl.NumberFormat('de-DE').format(currency)
 }
@@ -38,3 +43,4 @@ export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split('-i-')
   return arr[arr.length - 1]
 }
+export const getAvatarUrl = (avatarName?: string) => (avatarName ? `${config.baseUrl}images/${avatarName}` : userImage)
